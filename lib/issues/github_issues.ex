@@ -1,7 +1,10 @@
 defmodule Issues.GithubIssues do
+  require Logger
+
   @headers [ { "User-Agent", "Elixir felipe@zavan.me" } ]
 
   def fetch(user, project) do
+    Logger.info "Fetching issues for #{user}/#{project}"
     issues_url(user, project)
       |> HTTPoison.get(@headers)
       |> handle_response
@@ -16,10 +19,13 @@ defmodule Issues.GithubIssues do
   end
 
   def handle_response({ :ok, %{ status_code: 200, body: body } }) do
+    Logger.info "Successfully fetched issues"
+    Logger.debug fn -> inspect(body) end
     { :ok, Poison.Parser.parse!(body) }
   end
 
   def handle_response({ _, %{status_code: _, body: body} }) do
+    Logger.error "Failed to fetch issues"
     { :error, Poison.Parser.parse!(body) }
   end
 end
