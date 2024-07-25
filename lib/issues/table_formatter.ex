@@ -1,6 +1,9 @@
 defmodule Issues.TableFormatter do
   import Enum, only: [ each: 2, map: 2, map_join: 3, max: 1 ]
 
+  @doc """
+  Print a table of data in columns, with headers.
+  """
   def print_table_for_columns(rows, headers) do
     with data_by_columns = split_into_columns(rows, headers),
       column_widths = widths_of(data_by_columns),
@@ -12,6 +15,13 @@ defmodule Issues.TableFormatter do
     end
   end
 
+  @doc """
+  Split a list of maps into a list of lists, one for each column.
+
+  ## Example
+    iex> Issues.TableFormatter.split_into_columns([%{a: 1, b: 2}, %{a: 3, b: 4}], [:a, :b])
+    [["1", "3"], ["2", "4"]]
+  """
   def split_into_columns(rows, headers) do
     for header <- headers do
       for row <- rows, do: printable(row[header])
